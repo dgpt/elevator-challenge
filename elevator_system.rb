@@ -1,7 +1,7 @@
 require_relative 'elevator'
 
 class ElevatorSystem
-  attr_reader :elevators, :floors
+  attr_reader :elevators, :floors, :requests
 
   def initialize(elevators: 3, floors: 10)
     @elevators = elevators.times.map do |i|
@@ -24,5 +24,13 @@ class ElevatorSystem
   end
 
   def time_passed
+    elevators.each do |elevator|
+      elevator.move
+      elevator.release_passengers
+      elevator
+    end
   end
+
+  private
+
 end

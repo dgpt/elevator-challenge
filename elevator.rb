@@ -1,10 +1,11 @@
 class Elevator
   attr_reader :direction, :passengers, :floor, :max_floor
 
-  def initialize(direction: :up, floor: 1, max_floor: nil)
+  def initialize(passengers: [], direction: :up, floor: 1, max_floor: nil)
+    @passengers = passengers
     @direction = direction
     @floor = floor
-    @max_floors = max_floors || floor + 1
+    @max_floor = max_floor || floor + 1
   end
 
   def move(step: 1)
@@ -15,19 +16,23 @@ class Elevator
     end
 
     if @floor < 0
-      @floor = 0
+      @direction = :up
+      @floor = 1
     elsif @floor > max_floor
-      @floor = max_floor
+      @direction = :down
+      @floor = max_floor - 1
     end
+
+    self
   end
 
   def should_release_passengers?
     @passengers.include?(floor)
   end
 
-  def release_passenger(passenger)
-    return unless should_release_passengers?
-    @passengers.delete(passenger)
+  def release_passengers
+    return false unless should_release_passengers?
+    !!@passengers.delete(floor)
   end
 
   def add_passenger(passenger)
