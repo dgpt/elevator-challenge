@@ -9,7 +9,8 @@ class ElevatorSystem
         # alternate directions
         direction: (i % 2 == 0 ? :down : :up),
         # split elevators between floors
-        floor: floors / (i + 1)
+        floor: floors / (i + 1),
+        max_floor: floors - 1
       )
     end
 
