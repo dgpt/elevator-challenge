@@ -32,10 +32,17 @@ class Elevator
 
   def release_passengers
     return false unless should_release_passengers?
-    !!@passengers.delete(floor)
+    success = !!@passengers.delete(floor)
+    puts "Passenger(s) dropped off on floor #{floor + 1}" if success
+    success
   end
 
   def add_passenger(passenger)
-    @passengers.push(passenger)
+    add_passengers([passenger])
+  end
+
+  def add_passengers(passengers)
+    @passengers.concat(passenger)
+    puts "Passenger(s) picked up from floor #{floor + 1}"
   end
 end
