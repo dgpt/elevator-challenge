@@ -1,7 +1,7 @@
 require_relative 'elevator'
 
 class ElevatorSystem
-  attr_reader :elevators, :floors, :requests, :open_elevator
+  attr_reader :elevators, :elevator_cycle, :floors, :requests, :open_elevator
 
   def initialize(elevators: 3, floors: 10)
     @elevators = elevators.times.map do |i|
@@ -12,8 +12,9 @@ class ElevatorSystem
         floor: (floors - 1) / (i + 1),
         max_floor: floors - 1
       )
-    end.cycle
+    end
 
+    @elevator_cycle = @elevators.cycle
     @floors = floors
     @open_elevator = nil
     @requests = []
@@ -33,13 +34,14 @@ class ElevatorSystem
   def floor_request(floor)
     unless ready_for_floor_requests?
       puts "Please wait for passengers to be picked up before requesting a floor"
+      return false
     end
 
     open_elevator.add_passenger(floor)
   end
 
   def time_passed
-    move_elevator elevators.next
+    move_elevator elevator_cycle.next
   end
 
   private
@@ -47,11 +49,12 @@ class ElevatorSystem
   def move_elevator(elevator)
     elevator.move
     dropped_off = elevator.release_passengers
-    puts "Passenger(s) dropped off on floor #{elevator.floor + 1}" if dropped_off
+    puts "Passenger(s) dropped off on floor #{elevator.floor}" if dropped_off
 
     if elevator_requested?(floor: elevator.floor, direction: elevator.direction)
       @requests.delete({ floor: elevator.floor, direction: elevator.direction })
-      puts "Passenger(s) picked up from floor #{elevator.floor + 1}"
+      puts "Passenger(s) picked up from floor #{elevator.floor}. Awaiting floor requests..."
+      @open_elevator = elevator
     end
 
     elevator

@@ -15,6 +15,7 @@ class Elevator
       @floor -= step
     end
 
+    # todo: this is weird with step > 1
     if @floor < 0
       @direction = :up
       @floor = 1
@@ -40,6 +41,6 @@ class Elevator
   end
 
   def add_passengers(passengers)
-    @passengers.concat(passenger)
+    @passengers.concat(passengers)
   end
 end
