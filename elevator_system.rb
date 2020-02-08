@@ -63,4 +63,14 @@ class ElevatorSystem
   def elevator_requested?(floor:, direction:)
     @requests.include?({ floor: floor, direction: direction })
   end
+
+  def nearest_elevator(floor:, direction:)
+    @elevators.sort do |a, b|
+      if (a.direction != b.direction)
+        a.direction == direction ? -1 : 1;
+      else
+        (a.floor - floor).abs <=> (b.floor - floor).abs
+      end
+    end
+  end
 end
