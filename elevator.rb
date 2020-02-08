@@ -1,5 +1,6 @@
 class Elevator
-  attr_reader :direction, :passengers, :floor, :max_floor
+  attr_reader :passengers, :floor, :max_floor
+  attr_accessor :direction
 
   def initialize(passengers: [], direction: :up, floor: 1, max_floor: nil)
     @passengers = passengers
@@ -17,14 +18,22 @@ class Elevator
 
     # todo: this is weird with step > 1
     if @floor < 0
-      @direction = :up
+      reverse_direction
       @floor = 1
     elsif @floor > max_floor
-      @direction = :down
+      reverse_direction
       @floor = max_floor - 1
     end
 
     self
+  end
+
+  def reverse_direction
+    if @direction == :up
+      @direction = :down
+    else
+      @direction = :up
+    end
   end
 
   def should_release_passengers?
