@@ -41,7 +41,21 @@ class ElevatorSystem
   end
 
   def time_passed
-    move_elevator elevator_cycle.next
+    @open_elevator = nil
+
+    to_move = elevators.select { |e| e.passengers.length > 0 }
+    if @requests.length > 0
+      request = @requests.first
+      to_move << nearest_elevator(floor: request[:floor], direction: request[:direction])
+    end
+
+    to_move.map { |e|
+      move_elevator(e)
+      if @open_elevator
+        return @open_elevator
+      end
+      e
+    }
   end
 
   private
@@ -65,12 +79,23 @@ class ElevatorSystem
   end
 
   def nearest_elevator(floor:, direction:)
+    heading_opposite = proc do |elev|
+      elev.direction == :down && elev.floor < floor ||
+        elev.direction == :up && elev.floor > floor
+    end
+
     @elevators.sort do |a, b|
-      if (a.direction != b.direction)
-        a.direction == direction ? -1 : 1;
+      a_heading_opposite = heading_opposite.call(a)
+      b_heading_opposite = heading_opposite.call(b)
+      if (a_heading_opposite && b_heading_opposite)
+        0
+      elsif (a_heading_opposite || b_heading_opposite)
+        a_heading_opposite ? 1 : -1;
+      elsif (a.direction != b.direction)
+          a.direction == direction ? -1 : 1;
       else
         (a.floor - floor).abs <=> (b.floor - floor).abs
       end
-    end
+    end.first
   end
 end
